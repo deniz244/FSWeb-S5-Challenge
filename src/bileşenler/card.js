@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const Card = (makale) => {
   // GÖREV 5
   // ---------------------
@@ -17,7 +19,25 @@ const Card = (makale) => {
   //   </div>
   // </div>
   //
-}
+
+  const { anabaslik, yazarFoto, yazarAdi } = makale;
+
+  const card = `
+     <div class="headline">${anabaslik}</div>
+     <div class="author">
+       <div class="img-container">
+         <img src=${yazarFoto}>
+       </div>
+       <span>${yazarAdi} tarafından</span>
+     </div>
+   `;
+
+  const cardWrapper = document.createElement("div");
+  cardWrapper.classList.add("card");
+  cardWrapper.innerHTML = card;
+
+  return cardWrapper;
+};
 
 const cardEkleyici = (secici) => {
   // GÖREV 6
@@ -28,6 +48,31 @@ const cardEkleyici = (secici) => {
   // Card bileşenini kullanarak yanıttaki her makale nesnesinden bir kart oluşturun.
   // Her cardı, fonksiyona iletilen seçiciyle eşleşen DOM'daki öğeye ekleyin.
   //
-}
 
-export { Card, cardEkleyici }
+  const cardContainer = document.querySelector(secici);
+
+  axios
+    .get("http://localhost:5001/api/makaleler")
+    .then(function (response) {
+      const allArticles = response.data.makaleler;
+      Object.keys(allArticles).map((article) => {
+        allArticles[article].map((item) => {
+          console.log(item);
+          const card = Card(item);
+          cardContainer.appendChild(card);
+        });
+      });
+
+      console.log(response.data.makaleler);
+    })
+    .catch(function (error) {
+      // handle error
+      cardContainer.textContent = "Bir hata oluştu, sunucuya bağlanılamadı";
+      console.log(error);
+    })
+    .finally(function () {
+      // always executed
+    });
+};
+
+export { Card, cardEkleyici };
