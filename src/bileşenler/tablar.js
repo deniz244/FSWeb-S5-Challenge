@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const Tablar = (konu) => {
   // GÖREV 3
   // ---------------------
@@ -37,13 +39,27 @@ const tabEkleyici = (secici) => {
   // Tabları, fonksiyona iletilen seçiciyle eşleşen DOM'daki öğeye ekleyin.
   //
 
-  const biData = {
+  /*const biData = {
     konular: ["javascript", "bootstrap", "teknoloji", "jquery", "node.js"],
-  };
+  };*/
 
-  const tablar = Tablar(biData.konular);
   const tablarContainer = document.querySelector(secici);
-  tablarContainer.appendChild(tablar);
+  axios
+    .get("http://localhost:5001/api/konular")
+    .then(function (response) {
+      // handle success
+      const tablar = Tablar(response.data.konular);
+      tablarContainer.appendChild(tablar);
+      console.log(response.data);
+    })
+    .catch(function (error) {
+      // handle error
+      tablarContainer.textContent = "Bir hata oluştu, sunucuya bağlanılamadı";
+      console.log(error);
+    })
+    .finally(function () {
+      // always executed
+    });
 };
 
 export { Tablar, tabEkleyici };
